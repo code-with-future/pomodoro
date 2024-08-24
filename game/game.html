@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock, Paper, Scissors Game</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+      }
+      .game-container {
+        text-align: center;
+      }
+      .choice-buttons button {
+        margin: 5px;
+      }
+      .message {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1 class="display-4">Rock, Paper, Scissors</h1>
+      <div class="choice-buttons">
+        <button id="rockButton" class="btn btn-danger">Rock</button>
+        <button id="paperButton" class="btn btn-primary">Paper</button>
+        <button id="scissorsButton" class="btn btn-success">Scissors</button>
+      </div>
+      <div id="result" class="message"></div>
+      <button
+        id="resetButton"
+        class="btn btn-secondary mt-3"
+        style="display: none"
+      >
+        Play Again
+      </button>
+    </div>
+
+    <script>
+      // Get elements
+      const rockButton = document.getElementById("rockButton");
+      const paperButton = document.getElementById("paperButton");
+      const scissorsButton = document.getElementById("scissorsButton");
+      const result = document.getElementById("result");
+      const resetButton = document.getElementById("resetButton");
+
+      // Choices
+      const choices = ["rock", "paper", "scissors"];
+
+      // Function to handle player's choice
+      function handleChoice(playerChoice) {
+        const computerChoice =
+          choices[Math.floor(Math.random() * choices.length)];
+        let message = "";
+
+        if (playerChoice === computerChoice) {
+          message = `It's a tie! Computer also chose ${computerChoice}.`;
+        } else if (
+          (playerChoice === "rock" && computerChoice === "scissors") ||
+          (playerChoice === "paper" && computerChoice === "rock") ||
+          (playerChoice === "scissors" && computerChoice === "paper")
+        ) {
+          message = `You win! Computer chose ${computerChoice}.`;
+        } else {
+          message = `You lose! Computer chose ${computerChoice}.`;
+        }
+
+        result.innerHTML = `<div class="alert alert-info">${message}</div>`;
+        rockButton.disabled = true;
+        paperButton.disabled = true;
+        scissorsButton.disabled = true;
+        resetButton.style.display = "inline-block";
+      }
+
+      // Function to reset the game
+      function resetGame() {
+        result.innerHTML = "";
+        rockButton.disabled = false;
+        paperButton.disabled = false;
+        scissorsButton.disabled = false;
+        resetButton.style.display = "none";
+      }
+
+      // Event listeners
+      rockButton.addEventListener("click", () => handleChoice("rock"));
+      paperButton.addEventListener("click", () => handleChoice("paper"));
+      scissorsButton.addEventListener("click", () => handleChoice("scissors"));
+      resetButton.addEventListener("click", resetGame);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Management System</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding-top: 20px;
+        background-color: #f8f9fa;
+      }
+      .container {
+        max-width: 100%;
+        padding: 15px;
+      }
+      .card {
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .card-body {
+        padding: 15px;
+      }
+      .btn-book {
+        width: 100%;
+      }
+      .modal-content {
+        border-radius: 15px;
+      }
+      .modal-header,
+      .modal-body,
+      .modal-footer {
+        padding: 20px;
+      }
+      @media (max-width: 767px) {
+        .modal-dialog {
+          margin: 15px;
+        }
+      }
+      .text-center {
+        text-align: center;
+      }
+      .btn-primary,
+      .btn-success {
+        border-radius: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center mb-4">Hotel Management System</h1>
+
+      <div class="row">
+        <div class="col-md-12 col-lg-6 mb-4 mb-lg-0">
+          <h2>Check Room Availability</h2>
+          <form id="availability-form">
+            <div class="form-group">
+              <label for="check-in">Check-in Date:</label>
+              <input type="date" class="form-control" id="check-in" required />
+            </div>
+            <div class="form-group">
+              <label for="check-out">Check-out Date:</label>
+              <input type="date" class="form-control" id="check-out" required />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Check Availability
+            </button>
+          </form>
+          <div id="availability-result" class="mt-3"></div>
+        </div>
+
+        <div class="col-md-12 col-lg-6">
+          <h2>Available Rooms</h2>
+          <div id="room-list">
+            <!-- Room cards will be injected here by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for booking details -->
+    <div
+      class="modal fade details-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="modalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Booking Details</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Booking details will be injected here by JavaScript -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      document
+        .getElementById("availability-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const checkInDate = new Date(
+            document.getElementById("check-in").value
+          );
+          const checkOutDate = new Date(
+            document.getElementById("check-out").value
+          );
+
+          if (checkInDate >= checkOutDate) {
+            alert("Check-out date must be after the check-in date.");
+            return;
+          }
+
+          const roomList = [
+            { roomNumber: 101, type: "Single", price: 100 },
+            { roomNumber: 102, type: "Double", price: 150 },
+            { roomNumber: 103, type: "Suite", price: 250 },
+          ];
+
+          let resultHtml = "<h3>Available Rooms:</h3>";
+          resultHtml += '<div class="row">';
+
+          roomList.forEach((room) => {
+            resultHtml += `
+                    <div class="col-md-12 col-lg-4 mb-3">
+                        <div class="card room-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Room ${
+                                  room.roomNumber
+                                }</h5>
+                                <p class="card-text">Type: ${room.type}</p>
+                                <p class="card-text">Price: $${
+                                  room.price
+                                } per night</p>
+                                <button class="btn btn-success btn-book" data-room='${JSON.stringify(
+                                  room
+                                )}'>Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          });
+
+          resultHtml += "</div>";
+          document.getElementById("room-list").innerHTML = resultHtml;
+        });
+
+      document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("btn-book")) {
+          const room = JSON.parse(event.target.getAttribute("data-room"));
+          const modalBody = document.querySelector(
+            ".details-modal .modal-body"
+          );
+          modalBody.innerHTML = `
+                    <p><strong>Room Number:</strong> ${room.roomNumber}</p>
+                    <p><strong>Type:</strong> ${room.type}</p>
+                    <p><strong>Price:</strong> $${room.price} per night</p>
+                    <p><strong>Check-in Date:</strong> ${
+                      document.getElementById("check-in").value
+                    }</p>
+                    <p><strong>Check-out Date:</strong> ${
+                      document.getElementById("check-out").value
+                    }</p>
+                `;
+          $("#modalLabel").text(`Book Room ${room.roomNumber}`);
+          $(".details-modal").modal("show");
+        }
+      });
+    </script>
+  </body>
+</html>

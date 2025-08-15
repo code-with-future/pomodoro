@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Management System</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding-top: 20px;
+      }
+      .container {
+        max-width: 900px;
+      }
+      .student-table th,
+      .student-table td {
+        text-align: center;
+      }
+      @media (max-width: 767.98px) {
+        .student-table {
+          font-size: 0.875rem; /* Slightly smaller text on smaller screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Student Management System</h1>
+
+      <!-- Form to Add or Edit Student -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title" id="formTitle">Add Student</h5>
+          <form id="studentForm">
+            <input type="hidden" id="editIndex" />
+            <div class="form-group">
+              <label for="studentName">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="studentName"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentAge">Age</label>
+              <input
+                type="number"
+                class="form-control"
+                id="studentAge"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentGrade">Grade</label>
+              <input
+                type="text"
+                class="form-control"
+                id="studentGrade"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              Add Student
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Table to Display Students -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Student List</h5>
+          <div class="table-responsive">
+            <table class="table table-striped student-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Grade</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody">
+                <!-- Student rows will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let students = [];
+      let editIndex = -1;
+
+      document
+        .getElementById("studentForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          // Get form values
+          const name = document.getElementById("studentName").value;
+          const age = document.getElementById("studentAge").value;
+          const grade = document.getElementById("studentGrade").value;
+
+          if (editIndex === -1) {
+            // Add new student
+            students.push({ name, age, grade });
+          } else {
+            // Edit existing student
+            students[editIndex] = { name, age, grade };
+            editIndex = -1; // Reset index
+            document.getElementById("submitBtn").innerText = "Add Student";
+            document.getElementById("formTitle").innerText = "Add Student";
+          }
+
+          // Update the table
+          updateTable();
+
+          // Clear the form fields
+          document.getElementById("studentForm").reset();
+        });
+
+      function updateTable() {
+        const tableBody = document.getElementById("studentTableBody");
+        tableBody.innerHTML = ""; // Clear existing rows
+
+        students.forEach((student, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.age}</td>
+                <td>${student.grade}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="editStudent(${index})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeStudent(${index})">Delete</button>
+                </td>
+            `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function editStudent(index) {
+        const student = students[index];
+        document.getElementById("studentName").value = student.name;
+        document.getElementById("studentAge").value = student.age;
+        document.getElementById("studentGrade").value = student.grade;
+        editIndex = index;
+        document.getElementById("submitBtn").innerText = "Update Student";
+        document.getElementById("formTitle").innerText = "Edit Student";
+      }
+
+      function removeStudent(index) {
+        students.splice(index, 1); // Remove student from the array
+        updateTable(); // Update the table
+      }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
